@@ -1,6 +1,6 @@
 {
   "name": "testcafe-reporter-slack-optimized",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "TestCafe slack reporter plugin.",
   "repository": {
     "type": "git",
@@ -39,7 +39,6 @@
   "resolutions": {
     "graceful-fs": "4.2.4"
   },
-
   "dependencies": {
     "dotenv": "^7.0.0",
     "slack-node": "^0.1.8"
