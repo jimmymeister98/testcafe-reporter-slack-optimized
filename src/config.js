@@ -12,7 +12,8 @@ const defaultConfig = {
   channel: process.env.TESTCAFE_SLACK_CHANNEL || '#testcafe',
   username: process.env.TESTCAFE_SLACK_USERNAME || 'testcafebot',
   loggingLevel: process.env.TESTCAFE_SLACK_LOGGING_LEVEL || LoggingLevels.TEST,
-  quietMode: process.env.TESTCAFE_SLACK_QUIET_MODE || false
+  quietMode: process.env.TESTCAFE_SLACK_QUIET_MODE || false,
+  icon: process.env.TESTCAFE_SLACK_ICON || ":poop:"
 };
 
 const testCafeConfigFilePath = resolvePath('.testcaferc.json');
@@ -33,7 +34,7 @@ const loadReporterConfig = () => {
   try {
     let testCafeConfig = JSON.parse(configRawData);
 
-    return testCafeConfig.reporter.find(obj => obj.name === 'slack');
+    return testCafeConfig.reporter.find(obj => obj.name === 'slack-optimized');
   } catch (err) {
     return defaultConfig;
   }

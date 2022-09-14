@@ -19,10 +19,15 @@ export default class SlackMessage {
     this.errorMessages.push(message)
   }
 
-  sendMessage(message, slackProperties = null) {
+  unshiftMessage(message){
+    this.messages.unshift(message)
+  }
+
+  sendMessage(message, icon, slackProperties = null) {
     this.slack.webhook(Object.assign({
       channel: config.channel,
       username: config.username,
+      icon_emoji: icon || config.icon,
       text: message
     }, slackProperties), function (err, response) {
       if (!config.quietMode) {
@@ -37,7 +42,8 @@ export default class SlackMessage {
   }
 
   sendTestReport(nrFailedTests) {
-    this.sendMessage(this.getTestReportMessage(), nrFailedTests > 0 && this.loggingLevel === loggingLevels.TEST
+    this.sendMessage(this.getTestReportMessage(),nrFailedTests === 0 ? ":white_check_mark:" : ":poop:",
+        nrFailedTests > 0 && this.loggingLevel === loggingLevels.TEST
       ? {
         "attachments": [{
           color: 'danger',

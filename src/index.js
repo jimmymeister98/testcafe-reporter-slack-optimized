@@ -18,13 +18,13 @@ export default function () {
 
       const startTimeFormatted = this.moment(this.startTime).format('M/D/YYYY h:mm:ss a');
 
-      this.slack.sendMessage(`${emojis.rocket} ${'Starting TestCafe:'} ${bold(startTimeFormatted)}\n${emojis.computer} Running ${bold(testCount)} tests in: ${bold(userAgents)}\n`)
+      //this.slack.sendMessage(`${emojis.rocket} ${'Starting TestCafe:'} ${bold(startTimeFormatted)}\n${emojis.computer} Running ${bold(testCount)} tests in: ${bold(userAgents)}\n`)
     },
 
     reportFixtureStart(name, path) {
       this.currentFixtureName = name;
 
-      if (loggingLevel === LoggingLevels.TEST) this.slack.addMessage(bold(this.currentFixtureName));
+      //if (loggingLevel === LoggingLevels.TEST) this.slack.addMessage(bold(this.currentFixtureName));
     },
 
     reportTestDone(name, testRunInfo) {
@@ -34,13 +34,16 @@ export default function () {
       if (testRunInfo.skipped) {
         message = `${emojis.fastForward} ${italics(name)} - ${bold('skipped')}`;
       } else if (hasErr) {
-        message = `${emojis.fire} ${italics(name)} - ${bold('failed')}`;
+        if (this.lastFixtureName !== this.currentFixtureName){
+          this.slack.addMessage(this.currentFixtureName.trim() + ":");
+        }
+        this.lastFixtureName = this.currentFixtureName;
+        this.slack.addMessage('•' + name)
         this.renderErrors(testRunInfo.errs);
-      } else {
-        message = `${emojis.checkMark} ${italics(name)}`
       }
 
-      if (loggingLevel === LoggingLevels.TEST) this.slack.addMessage(message);
+
+      //if (loggingLevel === LoggingLevels.TEST) this.slack.addMessage(message);
     },
 
     renderErrors(errors) {
@@ -50,27 +53,15 @@ export default function () {
     },
 
     reportTaskDone(endTime, passed, warnings, result) {
-      const endTimeFormatted = this.moment(endTime).format('M/D/YYYY h:mm:ss a');
-      const durationMs = endTime - this.startTime;
-      const durationFormatted = this.moment
-        .duration(durationMs)
-        .format('h[h] mm[m] ss[s]');
+      var durationMs = endTime - this.startTime;
+      var durationStr = this.moment.duration(durationMs).format('h[h] mm[m] ss[s]');
+      var footer = passed === this.testCount ? passed + '/' +this.testCount + ' tests passed' : this.testCount - passed + '/' + this.testCount + ' failed';
 
-      const finishedStr = `${emojis.finishFlag} Testing finished at ${bold(endTimeFormatted)}\n`;
-      const durationStr = `${emojis.stopWatch} Duration: ${bold(durationFormatted)}\n`;
-      let summaryStr = '';
+      //var footer = passed + "/" + this.testCount + " tests passed";
 
-      if (result.skippedCount) summaryStr += `${emojis.fastForward} ${bold(`${result.skippedCount} skipped`)}\n`;
+      footer = '\n*' + footer + '* (Duration: ' + durationStr + ')';
 
-      if (result.failedCount) {
-        summaryStr += `${emojis.noEntry} ${bold(`${result.failedCount}/${this.testCount} failed`)}`
-      } else {
-        summaryStr += `${emojis.checkMark} ${bold(`${result.passedCount}/${this.testCount} passed`)}`
-      }
-
-      const message = `\n\n${finishedStr} ${durationStr} ${summaryStr}`;
-
-      this.slack.addMessage(message);
+      this.slack.unshiftMessage(footer);
       this.slack.sendTestReport(this.testCount - passed);
     }
   }
