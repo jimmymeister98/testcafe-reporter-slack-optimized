@@ -4,7 +4,7 @@
   "description": "TestCafe slack reporter plugin.",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Shafied/testcafe-reporter-slack.git"
+    "url": "git@github.com:jimmymeister98/testcafe-reporter-slack-optimized.git"
   },
   "author": {
     "name": "jimmymeister98",
